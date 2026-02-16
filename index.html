@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNO - Cyber Pro Multiplayer</title>
+    <style>
+        @font-face {
+            font-family: 'BahnarDisplay';
+            src: url('https://static-eu.webapp-portal.com/resources/freeqrd/lp/745130/6.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'BahnarDisplay';
+            src: url('https://static-eu.webapp-portal.com/resources/freeqrd/lp/745130/7.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'BahnarText';
+            src: url('https://static-eu.webapp-portal.com/resources/freeqrd/lp/745130/8.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; }
+
+        body.lang-ba, body.lang-ba input, body.lang-ba button, body.lang-ba h3, body.lang-ba p {
+            font-family: 'BahnarText', 'Inter', sans-serif !important;
+        }
+        body.lang-ba h1, body.lang-ba h2 {
+            font-family: 'BahnarDisplay', 'Inter', sans-serif !important;
+        }
+
+        :root {
+            --uno-red: #ff5252;
+            --uno-blue: #448aff;
+            --uno-green: #69f0ae;
+            --uno-yellow: #ffab40;
+        }
+
+        body {
+            background-color: #1e272e;
+            background-image: url('nền.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #top-controls {
+            position: fixed; top: 20px; right: 20px;
+            display: flex; align-items: center; gap: 15px; z-index: 2500;
+        }
+        .lang-group {
+            display: flex; gap: 5px; background: rgba(0,0,0,0.5);
+            padding: 5px; border-radius: 25px; backdrop-filter: blur(5px);
+            border: 1px solid rgba(0, 210, 211, 0.3);
+        }
+        .control-btn, .lang-btn {
+            background: transparent; color: white; border: 1px solid transparent;
+            padding: 8px 15px; border-radius: 20px; cursor: pointer;
+            font-weight: bold; transition: 0.3s;
+        }
+        .control-btn {
+            font-size: 20px; background: rgba(0,0,0,0.7);
+            border: 1px solid #00d2d3; backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .lang-btn:hover, .lang-btn.active, .control-btn:hover {
+            background: #00d2d3; color: black; box-shadow: 0 0 10px #00d2d3;
+        }
+
+        #start-screen, #player-select-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 1000; backdrop-filter: blur(8px);
+        }
+        #player-select-screen { display: none; }
+        .btn-group { display: flex; flex-direction: column; gap: 15px; }
+
+        .level-btn, .player-btn, .action-btn {
+            background: transparent; color: #fff; border: 2px solid #00d2d3; padding: 15px 40px;
+            font-size: 24px; cursor: pointer; border-radius: 50px;
+            width: 350px; text-align: center; transition: all 0.3s;
+            text-transform: uppercase; font-weight: bold; box-shadow: 0 0 15px #00d2d3;
+        }
+        .level-btn:hover, .player-btn:hover, .action-btn:hover { transform: scale(1.05); color: #000; background: #00d2d3; }
+        
+        .lvl-easy { border-color: #69f0ae; color: #69f0ae; box-shadow: 0 0 10px #69f0ae; }
+        .lvl-easy:hover { background: #69f0ae; }
+        .lvl-medium { border-color: #ffab40; color: #ffab40; box-shadow: 0 0 10px #ffab40; }
+        .lvl-medium:hover { background: #ffab40; }
+        .lvl-hard { border-color: #ff5252; color: #ff5252; box-shadow: 0 0 10px #ff5252; }
+        .lvl-hard:hover { background: #ff5252; }
+        .lvl-super { border-color: #d63031; color: #ff7675; box-shadow: 0 0 20px #d63031; animation: pulse 1.5s infinite; }
+        .lvl-super:hover { background: #d63031; color: white; }
+        .btn-guide { border-color: #a29bfe; color: #a29bfe; box-shadow: 0 0 10px #a29bfe; margin-top: 20px;}
+        .btn-guide:hover { background: #a29bfe; color: black; }
+
+        @keyframes pulse { 0% { box-shadow: 0 0 10px #d63031; } 50% { box-shadow: 0 0 25px #ff7675; } 100% { box-shadow: 0 0 10px #d63031; } }
+
+        /* --- HIỆU ỨNG RUNG MÀN HÌNH --- */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(0px, 0px) rotate(0deg); }
+        }
+        .shake-effect { animation: shake 0.5s; }
+
+        #guide-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 3000; backdrop-filter: blur(10px);
+        }
+        .guide-box {
+            background: rgba(30, 39, 46, 0.9); border: 2px solid #a29bfe; border-radius: 20px;
+            padding: 30px; width: 80%; max-width: 600px; max-height: 70vh; overflow-y: auto;
+            box-shadow: 0 0 30px rgba(162, 155, 254, 0.5); text-align: left; line-height: 1.6;
+        }
+        .guide-box h2 { text-align: center; color: #a29bfe; margin-top: 0; border-bottom: 1px solid #a29bfe; padding-bottom: 10px;}
+        .close-guide-btn {
+            margin-top: 20px; padding: 10px 30px; background: #a29bfe; color: black;
+            border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 18px; transition: 0.3s;
+        }
+        .close-guide-btn:hover { background: white; }
+
+        #game-board {
+            position: relative; display: flex; flex-direction: column;
+            justify-content: space-between; width: 100%; max-width: 1400px;
+            height: 100vh; padding: 10px; box-sizing: border-box;
+            filter: blur(20px); transition: filter 0.5s;
+        }
+
+        .top-area { display: flex; justify-content: center; align-items: flex-start; gap: 40px; width: 100%; height: 180px; }
+
+        .opponent {
+            display: flex; flex-direction: column; align-items: center;
+            transition: all 0.3s; opacity: 0.7; position: relative;
+        }
+        .opponent.active-turn { opacity: 1; transform: scale(1.1); }
+        .opponent.active-turn .player-info { background: #ff5252; box-shadow: 0 0 15px #ff5252; border-color: white; }
+
+        .opponent-hand { display: flex; justify-content: center; height: 80px; margin-top: 10px; }
+        .opponent-hand .card {
+            width: 50px; height: 75px; margin-left: -35px; 
+            border: 1px solid rgba(255,255,255,0.3); background-color: #2d3436;
+            background-image: url('LÁ MẶT TRƯỚC.png'); box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+        }
+        .opponent-hand .card:first-child { margin-left: 0; }
+
+        .player-info {
+            background: rgba(0, 0, 0, 0.6); padding: 5px 20px; border-radius: 20px;
+            font-size: 16px; font-weight: bold; color: white; backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1); white-space: nowrap;
+            display: flex; gap: 10px; align-items: center;
+        }
+        .card-count-badge {
+            background: white; color: black; border-radius: 50%; 
+            width: 24px; height: 24px; display: flex; justify-content: center; align-items: center;
+            font-size: 14px; font-weight: bold;
+        }
+
+        #center-area { display: flex; justify-content: center; align-items: center; gap: 80px; flex-grow: 1; position: relative; }
+        
+        .bottom-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+        .human-hand-wrapper { position: relative; height: 160px; display: flex; justify-content: center; }
+        #player-hand { display: flex; justify-content: center; align-items: center; height: 100%; perspective: 1000px; z-index: 10; }
+
+        .card {
+            border-radius: 10px; background-color: white; background-size: 100% 100%;
+            background-repeat: no-repeat; background-position: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer; position: relative;
+        }
+        #player-hand .card { 
+            width: 100px; height: 145px; border: 1px solid rgba(255,255,255,0.2); 
+            margin-left: -30px; transform-origin: bottom center; box-shadow: -5px 0 10px rgba(0,0,0,0.3);
+        }
+        #player-hand .card:first-child { margin-left: 0; }
+        #center-area .card { width: 150px; height: 215px; border-radius: 15px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); z-index: 2; }
+        .player-card:hover { transform: translateY(-50px) scale(1.2) rotate(0deg) !important; z-index: 100 !important; box-shadow: 0 0 25px rgba(255, 255, 255, 0.6); border: 2px solid white; }
+
+        #deck { 
+            background-color: #2d3436; background-image: url('LÁ MẶT TRƯỚC.png'); 
+            border: 2px solid rgba(255,255,255,0.1);
+            box-shadow: 1px 1px 0 #bbb, 2px 2px 0 #aaa, 3px 3px 0 #999, 4px 4px 0 #888, 5px 5px 0 #777, 6px 6px 15px rgba(0,0,0,0.5);
+        }
+        #deck:active { transform: translate(3px, 3px); box-shadow: none; }
+
+        .glow-red { box-shadow: 0 0 30px var(--uno-red) !important; border: 2px solid var(--uno-red) !important; }
+        .glow-blue { box-shadow: 0 0 30px var(--uno-blue) !important; border: 2px solid var(--uno-blue) !important; }
+        .glow-green { box-shadow: 0 0 30px var(--uno-green) !important; border: 2px solid var(--uno-green) !important; }
+        .glow-yellow { box-shadow: 0 0 30px var(--uno-yellow) !important; border: 2px solid var(--uno-yellow) !important; }
+
+        #message-log {
+            position: fixed; top: 60%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.85); color: #fff; padding: 15px 30px;
+            border-radius: 50px; font-size: 20px; pointer-events: none; z-index: 50;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);
+            opacity: 0; white-space: nowrap;
+        }
+
+        #turn-indicator {
+            position: absolute; top: 50%; right: 0; transform: translateY(-50%);
+            background: rgba(0,0,0,0.6); padding: 15px 30px 15px 15px;
+            border-radius: 30px 0 0 30px; font-size: 18px; font-weight: bold;
+            backdrop-filter: blur(5px); border-left: 5px solid #555; transition: all 0.3s;
+        }
+        .turn-human { border-color: #69f0ae !important; box-shadow: -5px 0 20px rgba(105, 240, 174, 0.3); }
+        .turn-human span { color: #69f0ae; }
+        .turn-ai { border-color: #ff5252 !important; }
+        .turn-ai span { color: #ff5252; }
+        
+        #direction-indicator { position: absolute; top: 50%; left: 20px; transform: translateY(-50%); font-size: 40px; color: rgba(255,255,255,0.3); }
+
+        .uno-shout { font-size: 50px; font-weight: 900; color: #ffab40; animation: bounce 0.5s infinite alternate; text-shadow: 0 0 10px red; }
+
+        #color-picker {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(5px);
+        }
+        .color-options-container { display: flex; gap: 20px; }
+        .color-option { width: 100px; height: 100px; border-radius: 50%; cursor: pointer; border: 4px solid rgba(255,255,255,0.2); transition: transform 0.2s; }
+        .color-option:hover { transform: scale(1.1); border-color: white; }
+        .color-option.red { background: linear-gradient(135deg, #ff5252, #b33939); }
+        .color-option.blue { background: linear-gradient(135deg, #448aff, #2962ff); }
+        .color-option.green { background: linear-gradient(135deg, #69f0ae, #00c853); }
+        .color-option.yellow { background: linear-gradient(135deg, #ffab40, #ff6d00); }
+
+        @keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -40%); } 10% { opacity: 1; transform: translate(-50%, -50%); } 80% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -60%); } }
+        @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.2); } }
+
+        #game-logo { position: absolute; top: 10px; left: 10px; width: 100px; height: auto; z-index: 50; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5)); }
+
+        #game-over-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 2000;
+        }
+        #game-over-msg { font-size: 40px; font-weight: bold; margin-bottom: 30px; text-align: center; line-height: 1.5; }
+        .btn-restart { padding: 15px 40px; font-size: 20px; background: #00d2d3; border: none; border-radius: 30px; cursor: pointer; color: black; font-weight: bold; }
+
+        .flying-card {
+            position: fixed; background-color: #2d3436; background-size: 100% 100%;
+            border-radius: 10px; border: 2px solid rgba(255,255,255,0.4);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7); z-index: 9999; pointer-events: none;
+            transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        #sound-toggle-btn {
+            position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px;
+            border-radius: 50%; background: rgba(0, 0, 0, 0.7); border: 2px solid #00d2d3;
+            color: white; font-size: 24px; cursor: pointer; z-index: 3000;
+            display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px); transition: all 0.3s; box-shadow: 0 0 10px rgba(0, 210, 211, 0.5); outline: none;
+        }
+        #sound-toggle-btn:hover { transform: scale(1.1); background: #00d2d3; color: black; box-shadow: 0 0 20px #00d2d3; }
+
+        /* --- NÚT HÔ UNO --- */
+        #call-uno-btn {
+            position: fixed; bottom: 90px; right: 20px; background: #ff5252; color: white;
+            font-weight: 900; font-size: 24px; padding: 15px 30px; border-radius: 50px;
+            border: 4px solid white; box-shadow: 0 0 20px #ff5252; cursor: pointer;
+            z-index: 3000; display: none; transition: transform 0.2s;
+        }
+        #call-uno-btn:hover { transform: scale(1.1); }
+        #call-uno-btn:active { transform: scale(0.9); box-shadow: 0 0 10px #ff5252; }
+
+        @media (max-width: 768px) {
+            .top-area { height: auto; padding-top: 70px; }
+            #center-area .card { width: 100px; height: 145px; }
+            .opponent-hand .card { width: 30px; height: 45px; margin-left: -20px; }
+            #player-hand .card { width: 70px; height: 100px; }
+            #game-logo { width: 60px; }
+            #top-controls { top: 10px; right: 10px; gap: 5px; transform: scale(0.85); transform-origin: top right; }
+            #call-uno-btn { bottom: 80px; font-size: 20px; padding: 10px 20px;}
+        }
+    </style>
+</head>
+<body>
+
+    <div id="top-controls">
+        <button class="control-btn" onclick="openGuide()" title="Hướng dẫn chơi">📖</button>
+        <div class="lang-group">
+            <button class="lang-btn active" id="btn-lang-vi" onclick="setLanguage('vi')">VN</button>
+            <button class="lang-btn" id="btn-lang-en" onclick="setLanguage('en')">EN</button>
+            <button class="lang-btn" id="btn-lang-bana" onclick="setLanguage('bana')">Ba Na</button>
+        </div>
+    </div>
+
+    <div id="start-screen">
+        <h1 style="font-size: 50px; text-shadow: 0 0 20px #00d2d3; margin-bottom: 30px;">UNO CYBER</h1>
+        <div class="btn-group">
+            <div class="level-btn lvl-easy" id="btn-easy" onclick="selectDifficulty('easy')">DỄ (Tập chơi)</div>
+            <div class="level-btn lvl-medium" id="btn-medium" onclick="selectDifficulty('medium')">VỪA (Bình thường)</div>
+            <div class="level-btn lvl-hard" id="btn-hard" onclick="selectDifficulty('hard')">KHÓ (Nghiêm túc)</div>
+            <div class="level-btn lvl-super" id="btn-super" onclick="selectDifficulty('super')">SIÊU KHÓ (Hủy diệt)</div>
+            <div class="action-btn btn-guide" id="btn-open-guide" onclick="openGuide()">📖 HƯỚNG DẪN CHƠI</div>
+        </div>
+    </div>
+
+    <div id="guide-modal">
+        <div class="guide-box">
+            <h2 id="guide-title-text">CÁCH CHƠI UNO</h2>
+            <div id="guide-content-text">
+                <p><b>Luật đánh:</b><br>- Đánh lá bài cùng <b>Màu</b> hoặc cùng <b>Số/Ký hiệu</b> với lá bài trên cùng của xấp bài bỏ.<br>- Nếu không có bài đánh, bạn phải bốc 1 lá từ xấp bài úp.</p>
+                <p><b>Thẻ đặc biệt:</b><br>
+                - <b>🚫 Cấm lượt:</b> Người tiếp theo bị mất lượt.<br>
+                - <b>⇄ Đổi chiều:</b> Đảo ngược vòng đánh.<br>
+                - <b>+2:</b> Người tiếp theo phải bốc 2 lá và mất lượt.<br>
+                - <b>Đổi màu (Wild):</b> Đổi màu tùy ý.<br>
+                - <b>+4 (Wild Draw 4):</b> Đổi màu, người tiếp theo bốc 4 lá và mất lượt.</p>
+                <p><b>Hô UNO:</b> Khi còn 1-2 lá bài, NHỚ BẤM NÚT "UNO!". Quên bấm phạt 2 lá!</p>
+            </div>
+            <center><button class="close-guide-btn" id="btn-close-guide" onclick="closeGuide()">ĐÃ HIỂU</button></center>
+        </div>
+    </div>
+
+    <div id="player-select-screen">
+        <h1 id="title-choose-players" style="font-size: 40px; margin-bottom: 30px;">CHỌN SỐ NGƯỜI CHƠI</h1>
+        <div class="btn-group">
+            <div class="player-btn" id="btn-2p" onclick="startGameWithPlayers(2)">2 NGƯỜI (Solo 1 vs 1)</div>
+            <div class="player-btn" id="btn-3p" onclick="startGameWithPlayers(3)">3 NGƯỜI (Hỗn chiến)</div>
+            <div class="player-btn" id="btn-4p" onclick="startGameWithPlayers(4)">4 NGƯỜI (Đại chiến)</div>
+        </div>
+    </div>
+
+    <div id="game-board">
+        <img src="LOGO.png" id="game-logo" alt="Logo"> 
+        <div id="direction-indicator">⟳</div>
+
+        <div class="top-area" id="opponents-container"></div>
+
+        <div id="center-area">
+            <div id="deck" class="card" onclick="drawCardByHuman()"></div>
+            <div id="discard-pile"></div>
+        </div>
+
+        <div class="bottom-area">
+            <div class="player-info" id="human-info"><span id="human-name-tag">BẠN</span> <div class="card-count-badge" id="human-badge">0</div></div>
+            <div class="human-hand-wrapper">
+                <div id="player-hand"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message-log">UNO Cyber Style!</div>
+    <div id="turn-indicator" class="turn-human"><span id="lbl-turn">Lượt:</span> <span id="turn-text">BẠN</span></div>
+
+    <div id="color-picker">
+        <h2 id="lbl-pick-color" style="color:white; margin-bottom:30px">CHỌN MÀU</h2>
+        <div class="color-options-container">
+            <div class="color-option red" onclick="pickColor('red')"></div>
+            <div class="color-option blue" onclick="pickColor('blue')"></div>
+            <div class="color-option green" onclick="pickColor('green')"></div>
+            <div class="color-option yellow" onclick="pickColor('yellow')"></div>
+        </div>
+    </div>
+
+    <div id="game-over-modal">
+        <div id="game-over-msg"></div>
+        <button class="btn-restart" id="btn-restart" onclick="location.reload()">CHƠI LẠI</button>
+    </div>
+
+    <button id="call-uno-btn" onclick="humanCallUno()">UNO!</button>
+
+    <audio id="bg-music" loop>
+        <source src="nhac-nen.mp3" type="audio/mp3">
+    </audio>
+    <button id="sound-toggle-btn" onclick="toggleBGM()" title="Bật/Tắt Nhạc Nền">🔇</button>
+
+<script>
+    const translations = {
+        vi: {
+            btn_easy: "DỄ (Tập chơi)", btn_medium: "VỪA (Bình thường)", btn_hard: "KHÓ (Nghiêm túc)", btn_super: "SIÊU KHÓ (Hủy diệt)",
+            btn_guide: "📖 HƯỚNG DẪN CHƠI", choose_players: "CHỌN SỐ NGƯỜI CHƠI",
+            btn_2p: "2 NGƯỜI (Solo 1 vs 1)", btn_3p: "3 NGƯỜI (Hỗn chiến)", btn_4p: "4 NGƯỜI (Đại chiến)",
+            guide_title: "CÁCH CHƠI & GIỚI THIỆU", btn_close_guide: "ĐÃ HIỂU",
+            guide_content: `
+                <h3 style="color: #69f0ae; margin-bottom: 5px;">Cách chơi:</h3>
+                <ul style="padding-left: 20px; margin-top: 0;">
+                    <li>Chia mỗi người 7 lá bài. Phần còn lại làm xấp bài bốc. Lật lá đầu tiên để bắt đầu. Nên xáo bài kỹ trước khi chia.</li>
+                    <li>Đánh bài theo nguyên tắc cùng màu hoặc cùng số/ký hiệu với lá trên cùng xấp bài bỏ, có thể dùng lá bài Vạn năng (Wild) bất cứ lúc nào.</li>
+                    <li>Nếu không có bài phù hợp thì phải bốc 1 lá từ xấp bài bốc, nếu lá vừa bốc đánh được thì có quyền đánh luôn.</li>
+                    <li>Quy tắc "UNO!": Khi còn 2 lá và chuẩn bị đánh 1 lá xuống (để còn lại 1 lá duy nhất) phải hô "UNO!". Nếu quên hô và bị phát hiện: Phạt bốc thêm 2 lá.</li>
+                    <li>Kết thúc ván chơi: Ván bài kết thúc khi có một người đánh hết số bài trên tay. Người thắng là người hết bài đầu tiên.</li>
+                </ul>
+                <h3 style="color: #ffab40; margin-bottom: 5px;">Giới thiệu: Bộ bài “Lá chắn số”</h3>
+                <ul style="padding-left: 20px; margin-top: 0;">
+                    <li>Được xây dựng dựa trên Luật An ninh mạng và Bộ luật Hình sự tích hợp vào luật chơi UNO truyền thống để tạo sự gần gũi.</li>
+                    <li>Mỗi lá bài đưa ra một tình huống pháp lý giả định về lừa đảo hoặc vi phạm mạng, buộc thanh thiếu niên phải thảo luận nhóm và tìm hướng xử lý thực tế trước khi đánh bài. Cơ chế này giúp chuyển hóa giờ chơi thành không gian học tập tương tác, giúp thanh thiếu niên vừa nắm vững kiến thức pháp luật, vừa trau dồi vốn từ vựng ngoại ngữ một cách tự nhiên.</li>
+                </ul>`,
+            you: "BẠN", bot: "MÁY", turn: "Lượt:", pick_color: "CHỌN MÀU", restart: "CHƠI LẠI",
+            msg_dealing: "Đang chia bài...", msg_start: "Bắt đầu!", msg_cant_play: "Không đánh được lá này!",
+            msg_draw1: "Bạn rút 1 lá", msg_skip: "bị cấm lượt!", msg_reverse: "Đổi chiều!",
+            msg_draw2: "phải rút 2 lá!", msg_draw4: "phải rút 4 lá!",
+            msg_pick: "chọn màu", msg_ai_draw: "rút bài...", msg_forgot_uno: "Quên hô UNO! Phạt 2 lá!",
+            color_red: "ĐỎ", color_blue: "XANH", color_green: "LÁ", color_yellow: "VÀNG",
+            win_msg: "CHÚC MỪNG!<br>BẠN ĐÃ CHIẾN THẮNG 🎉", lose_msg: "GAME OVER<br>{name} THẮNG 😭"
+        },
+        en: {
+            btn_easy: "EASY", btn_medium: "MEDIUM", btn_hard: "HARD", btn_super: "EXPERT",
+            btn_guide: "📖 HOW TO PLAY", choose_players: "CHOOSE PLAYERS",
+            btn_2p: "2 PLAYERS", btn_3p: "3 PLAYERS", btn_4p: "4 PLAYERS",
+            guide_title: "RULES & INTRODUCTION", btn_close_guide: "GOT IT",
+            guide_content: `
+                <h3 style="color: #69f0ae; margin-bottom: 5px;">How to play:</h3>
+                <ul style="padding-left: 20px; margin-top: 0;">
+                    <li>Deal 7 cards to each player. The rest becomes the draw pile. Flip the first card to start. Shuffle well before dealing.</li>
+                    <li>Play cards matching the color or number/symbol of the top card on the discard pile. Wild cards can be used at any time.</li>
+                    <li>If you don't have a matching card, draw 1 card from the draw pile. If the drawn card can be played, you can play it immediately.</li>
+                    <li>"UNO!" Rule: When you have 2 cards left and are about to play 1 (leaving exactly 1 card), you must call "UNO!". If you forget and get caught: Draw a 2-card penalty.</li>
+                    <li>End of game: The game ends when a player plays all their cards. The winner is the first one to empty their hand.</li>
+                </ul>
+                <h3 style="color: #ffab40; margin-bottom: 5px;">Intro: The "Digital Shield" Deck</h3>
+                <ul style="padding-left: 20px; margin-top: 0;">
+                    <li>Built upon the Cybersecurity Law and the Penal Code, integrated into traditional UNO rules to create familiarity.</li>
+                    <li>Each card presents a hypothetical legal scenario regarding scams or cyber violations, requiring teenagers to discuss in groups and find practical solutions before playing the card. This mechanism transforms playtime into an interactive learning space, helping teenagers master legal knowledge while naturally improving their foreign language vocabulary.</li>
+                </ul>`,
+            you: "YOU", bot: "BOT", turn: "Turn:", pick_color: "PICK COLOR", restart: "PLAY AGAIN",
+            msg_dealing: "Dealing...", msg_start: "Start!", msg_cant_play: "Can't play this!",
+            msg_draw1: "You drew 1 card", msg_skip: "is skipped!", msg_reverse: "Reversed!",
+            msg_draw2: "draws 2 cards!", msg_draw4: "draws 4 cards!",
+            msg_pick: "chooses", msg_ai_draw: "draws...", msg_forgot_uno: "Forgot UNO! Draw 2!",
+            color_red: "RED", color_blue: "BLUE", color_green: "GREEN", color_yellow: "YELLOW",
+            win_msg: "CONGRATULATIONS!<br>YOU WON 🎉", lose_msg: "GAME OVER<br>{name} WINS 😭"
+        },
+        bana: {
+            btn_easy: "JÊ JÊ", btn_medium: "KRA", btn_hard: "BƠNG KRĂ", btn_super: "KƠ-TIẾT",
+            btn_guide: "📖 THOI XOANG", choose_players: "CHỌN NỮ MÔI XOANG",
+            btn_2p: "BAR NỮ", btn_3p: "PÊNH NỮ", btn_4p: "PƠ-NUÔN NỮ",
+            guide_title: "LUẬT XOANG & GIỚI THIỆU", btn_close_guide: "KƠ-DƠ NGAI",
+            guide_content: `
+                <h3 style="color: #69f0ae; margin-bottom: 5px;">Thoi Xoang:</h3>
+                <ul style="padding-left: 20px; margin-top: 0;">
+                    <li>Chia an môi bơng 7 lá bài. Bài dai đoi bốc. Lật lá đầu tiên gôk xoang. Nhớ xáo bài kỹ.</li>
+                    <li>Đánh bài truh Màu hâm truh Số/Ký hiệu tơ lá bài lơ măt. Pơ-kă dùng bài Vạn năng (Wild) hơ-tŏk yô an.</li>
+                    <li>Tơ bơng hưm bài đánh, bơng an bốc môi lá. Tơ bốc truh bài đánh an, đánh luân.</li>
+                    <li>Luật "UNO!": Tơ kòn bar lá hâm đánh vât môi lá (kòn môi lá), an bơng hô "UNO!". Tơ brôk hô: Phạt bốc bar lá.</li>
+                    <li>Xong ván: Ván xoang xong tơ môi bơng đánh vât bài tơ tay. Ngai vât bài đầu tiên la ngai kơ-đơ.</li>
+                </ul>
+                <h3 style="color: #ffab40; margin-bottom: 5px;">Giới thiệu: Bộ bài “Lá chắn số”</h3>
+                <ul style="padding-left: 20px; margin-top: 0;">
+                    <li>Pơ-gơ̆ng tơ Luật An ninh mạng păng Bộ luật Hình sự pơ-tô tơ luật xoang UNO kơ-drai gôk an bơng lăng jê.</li>
+                    <li>Môi lá bài an tơ-băt môi pơ-kă lừa đảo hâm vi phạm mạng, an bơng pơ-rông pơ-đam hâm tơ-băt cách giải quyết tơ bơng đánh bài. Thoi âu an giờ xoang joi không gian học tập tương tác, an pơ-rông băt luật pháp, băt tơ-drong pơ-gơ̆ng pơ-ngôl đoi.</li>
+                </ul>`,
+            you: "BƠNG", bot: "MÁY", turn: "Lượt:", pick_color: "CHỌN MÀU", restart: "XOANG LẠI",
+            msg_dealing: "Đang chia...", msg_start: "Xoang!", msg_cant_play: "Hưm đánh được!",
+            msg_draw1: "Bơng bốc 1 lá", msg_skip: "cấm lượt!", msg_reverse: "Đổi chiều!",
+            msg_draw2: "An bốc bar lá!", msg_draw4: "An bốc pơ-nuôn lá!",
+            msg_pick: "Chọn màu", msg_ai_draw: "Bốc bài...", msg_forgot_uno: "Quên UNO! Phạt 2 lá!",
+            color_red: "ĐỎ", color_blue: "XANH", color_green: "LÁ", color_yellow: "VÀNG",
+            win_msg: "CHÚC MỪNG!<br>BƠNG KƠ-ĐƠ 🎉", lose_msg: "THUA TRẬN<br>{name} KƠ-ĐƠ 😭"
+        }
+    };
+
+    let currentLang = 'vi';
+    function t(key, params = {}) {
+        let str = translations[currentLang][key] || translations['vi'][key];
+        for (const [k, v] of Object.entries(params)) { str = str.replace(`{${k}}`, v); }
+        return str;
+    }
+
+    function setLanguage(lang) {
+        currentLang = lang;
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`btn-lang-${lang}`).classList.add('active');
+        document.getElementById('btn-easy').innerText = t('btn_easy');
+        document.getElementById('btn-medium').innerText = t('btn_medium');
+        document.getElementById('btn-hard').innerText = t('btn_hard');
+        document.getElementById('btn-super').innerText = t('btn_super');
+        document.getElementById('btn-open-guide').innerText = t('btn_guide');
+        document.getElementById('guide-title-text').innerText = t('guide_title');
+        document.getElementById('guide-content-text').innerHTML = t('guide_content');
+        document.getElementById('btn-close-guide').innerText = t('btn_close_guide');
+        document.getElementById('title-choose-players').innerText = t('choose_players');
+        document.getElementById('btn-2p').innerText = t('btn_2p');
+        document.getElementById('btn-3p').innerText = t('btn_3p');
+        document.getElementById('btn-4p').innerText = t('btn_4p');
+        document.getElementById('lbl-turn').innerText = t('turn');
+        document.getElementById('lbl-pick-color').innerText = t('pick_color');
+        document.getElementById('btn-restart').innerText = t('restart');
+        
+        if(players.length > 0) {
+            players[0].name = t('you');
+            for(let i=1; i<players.length; i++) players[i].name = t('bot') + ` ${i}`;
+            updateUI();
+        }
+    }
+
+    function openGuide() { document.getElementById('guide-modal').style.display = 'flex'; }
+    function closeGuide() { document.getElementById('guide-modal').style.display = 'none'; }
+
+    const colors = ['red', 'blue', 'green', 'yellow'];
+    const values = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '🚫', '⇄', '+2'];
+    const BACK_CARD_IMG = 'LÁ MẶT TRƯỚC.png'; 
+
+    let deck = [], discardPile = [], players = [];
+    let currentPlayerIndex = 0, playDirection = 1;
+    let currentColor = '', isGameOver = false;
+    let currentDifficulty = 'medium', totalPlayers = 2;
+    
+    // --- BIẾN CHO LUẬT HÔ UNO ---
+    let humanSafeUno = false; // Trạng thái đã hô UNO
+    let unoPenaltyTimeout = null;
+
+    const playSoundURL = 'card-swap.mp3'; 
+    function playCardSound() {
+        const audio = new Audio(playSoundURL); audio.volume = 1.0;
+        audio.play().catch(err => console.log("Lỗi âm thanh:", err));
+    }
+
+    function triggerShake() {
+        const board = document.getElementById('game-board');
+        board.classList.remove('shake-effect');
+        void board.offsetWidth; // Restart animation
+        board.classList.add('shake-effect');
+    }
+
+    let isMusicPlaying = false;
+    const bgMusic = document.getElementById('bg-music');
+    const soundBtn = document.getElementById('sound-toggle-btn');
+    bgMusic.volume = 0.3; 
+
+    function toggleBGM() {
+        if (isMusicPlaying) {
+            bgMusic.pause(); soundBtn.innerText = '🔇'; isMusicPlaying = false;
+        } else {
+            bgMusic.play().catch(e => console.log(e)); soundBtn.innerText = '🔊'; isMusicPlaying = true;
+        }
+    }
+
+    function selectDifficulty(level) {
+        currentDifficulty = level;
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('player-select-screen').style.display = 'flex';
+    }
+
+    function startGameWithPlayers(num) {
+        totalPlayers = num;
+        document.getElementById('player-select-screen').style.display = 'none';
+        document.getElementById('game-board').style.filter = 'none';
+        setupPlayers(num); initGame();
+        if (!isMusicPlaying) toggleBGM();
+    }
+
+    function setupPlayers(num) {
+        players = [{ index: 0, type: 'human', name: t('you'), hand: [] }];
+        const container = document.getElementById('opponents-container'); container.innerHTML = ''; 
+        for(let i = 1; i < num; i++) {
+            players.push({ index: i, type: 'ai', name: t('bot') + ` ${i}`, hand: [] });
+            container.innerHTML += `<div class="opponent" id="opponent-${i}">
+                <div class="player-info"><span id="name-tag-${i}">${players[i].name}</span> <div class="card-count-badge" id="badge-${i}">0</div></div>
+                <div class="opponent-hand" id="hand-${i}"></div></div>`;
+        }
+    }
+
+    function createDeck() {
+        deck = [];
+        colors.forEach(color => {
+            deck.push({ color: color, value: '0', type: 'number', imageFile: `${color}_0.png` });
+            for (let i = 1; i < values.length; i++) {
+                let val = values[i]; let type = ['🚫', '⇄', '+2'].includes(val) ? 'action' : 'number';
+                let suffix = val === '🚫' ? 'skip' : val === '⇄' ? 'reverse' : val === '+2' ? 'draw2' : val;
+                deck.push({ color: color, value: val, type: type, imageFile: `${color}_${suffix}.png` });
+                deck.push({ color: color, value: val, type: type, imageFile: `${color}_${suffix}.png` });
+            }
+        });
+        for (let i = 0; i < 4; i++) {
+            deck.push({ color: 'black', value: '🌈', type: 'wild', imageFile: 'wild.png' });
+            deck.push({ color: 'black', value: '+4', type: 'wild', imageFile: 'wild_draw4.png' });
+        }
+    }
+
+    function shuffleDeck() {
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+    }
+
+    function initGame() {
+        createDeck(); shuffleDeck(); showToast(t('msg_dealing'));
+        dealInitialCards(0, 7, () => {
+             let startCard = deck.pop();
+            while(startCard.color === 'black') { deck.unshift(startCard); shuffleDeck(); startCard = deck.pop(); }
+            discardPile.push(startCard); currentColor = startCard.color; updateUI();
+            
+            animateStartGameCard(startCard, () => {
+                showToast(t('msg_start'));
+                if (['🚫', '⇄', '+2'].includes(startCard.value)) {
+                    triggerShake();
+                    if (startCard.value === '⇄') {
+                         if (totalPlayers === 2) { 
+                             currentPlayerIndex = 1; setTimeout(aiTurn, 1000);
+                         } else {
+                             playDirection *= -1; updateDirectionUI();
+                         }
+                    } else if (startCard.value === '🚫') {
+                        currentPlayerIndex = 1; setTimeout(aiTurn, 1000);
+                    } else if (startCard.value === '+2') {
+                        drawMultipleWithEffect(0, 2, () => {
+                            currentPlayerIndex = 1; setTimeout(aiTurn, 1000);
+                        });
+                    }
+                }
+            });
+        });
+    }
+
+    function dealInitialCards(pIdx, cardsLeft, cb) {
+        if (cardsLeft === 0) { cb(); return; }
+        animateDrawCard(pIdx, () => {
+            drawCard(pIdx); updateUI();
+            let nextP = (pIdx + 1) % totalPlayers;
+            setTimeout(() => dealInitialCards(nextP, (nextP === 0) ? cardsLeft - 1 : cardsLeft, cb), 50);
+        });
+    }
+
+    function drawCard(playerIdx) {
+        if (deck.length === 0) {
+            if (discardPile.length > 1) {
+                const top = discardPile.pop(); deck = discardPile; discardPile = [top]; shuffleDeck();
+            } else return;
+        }
+        players[playerIdx].hand.push(deck.pop());
+    }
+
+    function updateUI() {
+        const topCard = discardPile[discardPile.length - 1];
+        const discardDiv = document.getElementById('discard-pile'); discardDiv.innerHTML = '';
+        if(topCard) {
+            const el = createCardElement(topCard); el.classList.add(`glow-${currentColor}`); discardDiv.appendChild(el);
+        }
+
+        const pHandDiv = document.getElementById('player-hand'); pHandDiv.innerHTML = '';
+        players[0].hand.forEach((card, index) => {
+            const cardEl = createCardElement(card); cardEl.classList.add('player-card');
+            let angle = (index - (players[0].hand.length - 1) / 2) * 5;
+            let translateY = Math.abs(index - (players[0].hand.length - 1) / 2) * 2;
+            cardEl.style.transform = `rotate(${angle}deg) translateY(${translateY}px)`;
+            cardEl.onmouseenter = function() { this.style.transform = `translateY(-50px) scale(1.2)`; this.style.zIndex=100;}
+            cardEl.onmouseleave = function() { this.style.transform = `rotate(${angle}deg) translateY(${translateY}px)`; this.style.zIndex='';}
+            cardEl.onclick = () => playCardHuman(index);
+            pHandDiv.appendChild(cardEl);
+        });
+        document.getElementById('human-badge').innerText = players[0].hand.length;
+
+        for (let i = 1; i < totalPlayers; i++) {
+            const handDiv = document.getElementById(`hand-${i}`);
+            document.getElementById(`name-tag-${i}`).innerText = players[i].name;
+            handDiv.innerHTML = '';
+            players[i].hand.forEach(() => { handDiv.appendChild(Object.assign(document.createElement('div'), {className:'card'})); });
+            document.getElementById(`badge-${i}`).innerText = players[i].hand.length;
+            document.getElementById(`opponent-${i}`).classList.toggle('active-turn', currentPlayerIndex === i);
+        }
+
+        document.getElementById('turn-text').innerText = players[currentPlayerIndex].name;
+        const hInfo = document.getElementById('human-info');
+        if (currentPlayerIndex === 0) {
+             document.getElementById('turn-indicator').className = "turn-human";
+             hInfo.style.border = "2px solid #69f0ae"; hInfo.style.boxShadow = "0 0 15px #69f0ae";
+        } else {
+             document.getElementById('turn-indicator').className = "turn-ai";
+             hInfo.style.border = "1px solid rgba(255,255,255,0.1)"; hInfo.style.boxShadow = "none";
+        }
+
+        // Hiện nút UNO nếu người chơi còn 1-2 lá bài
+        const unoBtn = document.getElementById('call-uno-btn');
+        if ((players[0].hand.length === 1 || players[0].hand.length === 2) && !humanSafeUno) {
+            unoBtn.style.display = 'block';
+        } else if (players[0].hand.length > 2) {
+            unoBtn.style.display = 'none'; humanSafeUno = false;
+        }
+        updateDirectionUI();
+    }
+
+    function updateDirectionUI() { document.getElementById('direction-indicator').innerText = playDirection === 1 ? '↻' : '↺'; }
+    function createCardElement(card) {
+        const el = document.createElement('div'); el.className = `card`; el.style.backgroundImage = `url('${card.imageFile}')`; return el;
+    }
+
+    function isValidMove(card) {
+        const topCard = discardPile[discardPile.length - 1];
+        return card.color === currentColor || card.value === topCard.value || card.color === 'black';
+    }
+
+    function humanCallUno() {
+        humanSafeUno = true;
+        document.getElementById('call-uno-btn').style.display = 'none';
+        const msgLog = document.getElementById('message-log');
+        msgLog.innerHTML = `<span class="uno-shout">BẠN: UNO!!!</span>`;
+        msgLog.style.animation = 'none'; msgLog.offsetHeight; msgLog.style.animation = 'fadeInOut 2s forwards';
+    }
+
+    function playCardHuman(index) {
+        if (currentPlayerIndex !== 0 || isGameOver) return;
+        const card = players[0].hand[index];
+        if (isValidMove(card)) {
+            playCardSound();
+            animatePlayCard(0, index, card, () => {
+                players[0].hand.splice(index, 1); discardPile.push(card); handleCardEffect(card, 0);
+            });
+        } else { showToast(t('msg_cant_play')); }
+    }
+
+    function drawCardByHuman() {
+        if (currentPlayerIndex !== 0 || isGameOver) return;
+        animateDrawCard(0, () => { drawCard(0); showToast(t('msg_draw1')); updateUI(); nextTurn(); });
+    }
+
+    function nextTurn() {
+        if (isGameOver) return;
+        currentPlayerIndex = (currentPlayerIndex + playDirection + totalPlayers) % totalPlayers;
+        updateUI();
+        if (players[currentPlayerIndex].type === 'ai') setTimeout(aiTurn, 1000);
+    }
+
+    function handleCardEffect(card, pIdx) {
+        if (card.color !== 'black') currentColor = card.color;
+        updateUI();
+
+        if (['🚫', '⇄', '+2', '+4'].includes(card.value)) triggerShake();
+
+        let nextP = (pIdx + playDirection + totalPlayers) % totalPlayers;
+
+        if (card.value === '🚫') {
+            showToast(`${players[nextP].name} ${t('msg_skip')}`);
+            checkWin(pIdx);
+            if(!isGameOver) {
+                currentPlayerIndex = (currentPlayerIndex + playDirection + totalPlayers) % totalPlayers; 
+                nextTurn(); 
+            }
+        } 
+        else if (card.value === '⇄') {
+            if (totalPlayers === 2) {
+                showToast(`${players[nextP].name} ${t('msg_skip')}`);
+                checkWin(pIdx);
+                if(!isGameOver) {
+                    currentPlayerIndex = (currentPlayerIndex + playDirection + totalPlayers) % totalPlayers; 
+                    nextTurn();
+                }
+            } else {
+                playDirection *= -1; showToast(t('msg_reverse')); updateDirectionUI();
+                checkWin(pIdx); if(!isGameOver) nextTurn();
+            }
+        }
+        else if (card.value === '+2') {
+            showToast(`${players[nextP].name} ${t('msg_draw2')}`);
+            drawMultipleWithEffect(nextP, 2, () => {
+                checkWin(pIdx);
+                if(!isGameOver) {
+                    currentPlayerIndex = (currentPlayerIndex + playDirection + totalPlayers) % totalPlayers; 
+                    nextTurn();
+                }
+            });
+        }
+        else if (card.color === 'black') {
+            checkWin(pIdx);
+            if(isGameOver) return;
+            
+            if (players[pIdx].type === 'human') {
+                document.getElementById('color-picker').style.display = 'flex';
+            } else {
+                const bestColor = getBestColorForAI(pIdx);
+                currentColor = bestColor;
+                showToast(`${players[pIdx].name} ${t('msg_pick')} ${translateColor(bestColor)}`);
+                
+                if (card.value === '+4') {
+                    showToast(`${players[nextP].name} ${t('msg_draw4')}`);
+                    drawMultipleWithEffect(nextP, 4, () => {
+                        currentPlayerIndex = (currentPlayerIndex + playDirection + totalPlayers) % totalPlayers; 
+                        nextTurn();
+                    });
+                } else {
+                    nextTurn();
+                }
+            }
+        }
+        else {
+            checkWin(pIdx); if(!isGameOver) nextTurn();
+        }
+    }
+
+    function pickColor(color) {
+        document.getElementById('color-picker').style.display = 'none'; currentColor = color;
+        const topCard = discardPile[discardPile.length - 1];
+        showToast(`${t('msg_pick')} ${translateColor(color)}`); updateUI();
+
+        let nextP = (0 + playDirection + totalPlayers) % totalPlayers;
+
+        if (topCard.value === '+4') {
+            showToast(`${players[nextP].name} ${t('msg_draw4')}`);
+            drawMultipleWithEffect(nextP, 4, () => {
+                currentPlayerIndex = (currentPlayerIndex + playDirection + totalPlayers) % totalPlayers; 
+                nextTurn();
+            });
+        } else {
+            nextTurn();
+        }
+    }
+
+    function aiTurn() {
+        if (isGameOver) return;
+        let aiIdx = currentPlayerIndex; let ai = players[aiIdx];
+        let validMoves = ai.hand.filter(card => isValidMove(card));
+        
+        if (validMoves.length > 0) {
+            let selectedCard = currentDifficulty === 'easy' ? validMoves[Math.floor(Math.random() * validMoves.length)] :
+                validMoves.sort((a,b)=> ((b.value==='+4'?10:0)+(b.value==='+2'?5:0)) - ((a.value==='+4'?10:0)+(a.value==='+2'?5:0)))[0];
+            
+            let cardIdx = ai.hand.indexOf(selectedCard); playCardSound();
+            animatePlayCard(aiIdx, cardIdx, selectedCard, () => {
+                ai.hand.splice(cardIdx, 1); discardPile.push(selectedCard); handleCardEffect(selectedCard, aiIdx);
+            });
+        } else {
+            showToast(`${ai.name} ${t('msg_ai_draw')}`);
+            animateDrawCard(aiIdx, () => { drawCard(aiIdx); updateUI(); nextTurn(); });
+        }
+    }
+
+    function getBestColorForAI(pIdx) {
+        const counts = { red: 0, green: 0, blue: 0, yellow: 0 };
+        players[pIdx].hand.forEach(c => { if (c.color !== 'black') counts[c.color]++; });
+        return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+    }
+
+    function checkWin(pIdx) {
+        if (pIdx === null) return;
+        
+        // --- LOGIC PHẠT QUÊN HÔ UNO ---
+        if (players[pIdx].hand.length === 1) {
+            if (players[pIdx].type === 'ai') {
+                const msgLog = document.getElementById('message-log');
+                msgLog.innerHTML = `<span class="uno-shout">${players[pIdx].name} UNO!!!</span>`;
+                msgLog.style.animation = 'none'; msgLog.offsetHeight; msgLog.style.animation = 'fadeInOut 2s forwards';
+            } else if (!humanSafeUno) {
+                clearTimeout(unoPenaltyTimeout);
+                // Phạt người chơi nếu sau 2 giây chưa hô UNO
+                unoPenaltyTimeout = setTimeout(() => {
+                    if (!humanSafeUno && players[0].hand.length === 1) {
+                        showToast(t('msg_forgot_uno'));
+                        drawMultipleWithEffect(0, 2, () => { updateUI(); });
+                    }
+                }, 2000); 
+            }
+        }
+
+        if (players[pIdx].hand.length === 0) {
+            isGameOver = true;
+            document.getElementById('game-over-modal').style.display = 'flex';
+            const msgBox = document.getElementById('game-over-msg');
+            if (players[pIdx].type === 'human') {
+                msgBox.innerHTML = t('win_msg'); msgBox.style.color = "#69f0ae";
+            } else {
+                msgBox.innerHTML = t('lose_msg', { name: players[pIdx].name }); msgBox.style.color = "#ff5252";
+            }
+        }
+    }
+
+    // --- ANIMATIONS CORE ---
+    function animateDrawCard(pIdx, callback) {
+        const deckEl = document.getElementById('deck'); const rectDeck = deckEl.getBoundingClientRect();
+        let destX, destY, rotateEnd;
+
+        if (pIdx === 0) {
+            const rectHand = document.getElementById('player-hand').getBoundingClientRect();
+            destX = rectHand.left + rectHand.width/2 - 50; destY = rectHand.top + 20; rotateEnd = '0deg';
+        } else {
+            const rectHand = document.getElementById(`hand-${pIdx}`).getBoundingClientRect();
+            destX = rectHand.left + rectHand.width/2 - 25; destY = rectHand.top; rotateEnd = '180deg';
+        }
+
+        const flyer = document.createElement('div'); flyer.className = 'flying-card';
+        flyer.style.backgroundImage = `url('${BACK_CARD_IMG}')`;
+        flyer.style.width = pIdx === 0 ? '100px' : '50px'; flyer.style.height = pIdx === 0 ? '145px' : '75px';
+        flyer.style.left = `${rectDeck.left}px`; flyer.style.top = `${rectDeck.top}px`; document.body.appendChild(flyer);
+
+        setTimeout(() => { flyer.style.left = `${destX}px`; flyer.style.top = `${destY}px`; flyer.style.transform = `rotate(${rotateEnd})`; }, 50);
+        setTimeout(() => { flyer.remove(); if (callback) callback(); }, 600);
+    }
+
+    function animatePlayCard(pIdx, cardIndex, cardData, callback) {
+        let rectStart;
+        if (pIdx === 0) {
+            const cardEl = document.getElementById('player-hand').children[cardIndex];
+            if(!cardEl) { if(callback) callback(); return; }
+            rectStart = cardEl.getBoundingClientRect(); cardEl.style.opacity = '0'; 
+        } else { rectStart = document.getElementById(`hand-${pIdx}`).getBoundingClientRect(); }
+
+        const rectEnd = document.getElementById('discard-pile').getBoundingClientRect();
+        const flyer = document.createElement('div'); flyer.className = 'flying-card';
+        flyer.style.backgroundImage = `url('${cardData.imageFile}')`;
+        flyer.style.width = pIdx === 0 ? '100px' : '50px'; flyer.style.height = pIdx === 0 ? '145px' : '75px';
+        flyer.style.left = `${rectStart.left}px`; flyer.style.top = `${rectStart.top}px`; document.body.appendChild(flyer);
+
+        setTimeout(() => {
+            flyer.style.left = `${rectEnd.left}px`; flyer.style.top = `${rectEnd.top}px`;
+            flyer.style.width = '150px'; flyer.style.height = '215px'; flyer.style.transform = 'rotate(0deg)';
+        }, 50);
+        setTimeout(() => { flyer.remove(); if (callback) callback(); }, 600);
+    }
+
+    function animateStartGameCard(cardData, callback) {
+         const rDeck = document.getElementById('deck').getBoundingClientRect(), rEnd = document.getElementById('discard-pile').getBoundingClientRect();
+         const flyer = document.createElement('div'); flyer.className = 'flying-card'; flyer.style.backgroundImage = `url('${cardData.imageFile}')`;
+         flyer.style.width = '150px'; flyer.style.height = '215px'; flyer.style.left = `${rDeck.left}px`; flyer.style.top = `${rDeck.top}px`;
+         document.body.appendChild(flyer);
+         setTimeout(() => { flyer.style.left = `${rEnd.left}px`; flyer.style.top = `${rEnd.top}px`; }, 50);
+         setTimeout(() => { flyer.remove(); if (callback) callback(); }, 600);
+    }
+
+    function drawMultipleWithEffect(pIdx, count, finishedCallback) {
+        if (count <= 0) { if (finishedCallback) finishedCallback(); return; }
+        animateDrawCard(pIdx, () => {
+            drawCard(pIdx); updateUI(); 
+            setTimeout(() => { drawMultipleWithEffect(pIdx, count - 1, finishedCallback); }, 200);
+        });
+    }
+
+    function showToast(msg) { 
+        const logEl = document.getElementById('message-log'); logEl.innerHTML = msg;
+        logEl.style.animation = 'none'; logEl.offsetHeight; logEl.style.animation = 'fadeInOut 2s forwards';
+    }
+    
+    function translateColor(c) { 
+        if(c === 'red') return t('color_red'); if(c === 'blue') return t('color_blue');
+        if(c === 'green') return t('color_green'); if(c === 'yellow') return t('color_yellow'); return c; 
+    }
+
+    setLanguage('vi');
+</script>
+</body>
+</html>
