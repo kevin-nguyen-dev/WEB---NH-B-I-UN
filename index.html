@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UNO - Cyber Pro Multiplayer</title>
     <style>
+        /* --- 1. KHO FONT TIẾNG BAHNAR ONLINE --- */
         @font-face {
             font-family: 'BahnarDisplay';
             src: url('https://static-eu.webapp-portal.com/resources/freeqrd/lp/745130/6.ttf') format('truetype');
@@ -14,7 +15,7 @@
         @font-face {
             font-family: 'BahnarDisplay';
             src: url('https://static-eu.webapp-portal.com/resources/freeqrd/lp/745130/7.ttf') format('truetype');
-            font-weight: bold;
+            font-weight: bold; /* Sửa thành Bold để hỗ trợ in đậm */
             font-style: normal;
         }
         @font-face {
@@ -24,12 +25,18 @@
             font-style: normal;
         }
 
+        /* --- 2. FONT MẶC ĐỊNH (VN/EN) --- */
         body { font-family: 'Inter', 'Segoe UI', sans-serif; }
 
-        body.lang-ba, body.lang-ba input, body.lang-ba button, body.lang-ba h3, body.lang-ba p {
+        /* --- 3. BỘ KÍCH HOẠT FONT BAHNAR (ÁP DỤNG CHO MỌI THẺ) --- */
+        body.lang-ba, 
+        body.lang-ba * {
             font-family: 'BahnarText', 'Inter', sans-serif !important;
         }
-        body.lang-ba h1, body.lang-ba h2 {
+        
+        body.lang-ba h1, 
+        body.lang-ba h2, 
+        body.lang-ba h3 {
             font-family: 'BahnarDisplay', 'Inter', sans-serif !important;
         }
 
@@ -447,30 +454,31 @@
             win_msg: "CONGRATULATIONS!<br>YOU WON 🎉", lose_msg: "GAME OVER<br>{name} WINS 😭"
         },
         bana: {
-            btn_easy: "JÊ JÊ", btn_medium: "KRA", btn_hard: "BƠNG KRĂ", btn_super: "KƠ-TIẾT",
-            btn_guide: "📖 THOI XOANG", choose_players: "CHỌN NỮ MÔI XOANG",
-            btn_2p: "BAR NỮ", btn_3p: "PÊNH NỮ", btn_4p: "PƠ-NUÔN NỮ",
-            guide_title: "LUẬT XOANG & GIỚI THIỆU", btn_close_guide: "KƠ-DƠ NGAI",
+            btn_easy: "Hiôk", btn_medium: "Kơplăh", btn_hard: "Tơnap", btn_super: "Tơnap Hloh",
+            btn_guide: "📖 TRONG NGÔI", choose_players: "RƠIH BƠNGAI NGÔI",
+            btn_2p: "‘BAR ‘NU NGÔI", btn_3p: "‘PE ‘NU NGÔI", btn_4p: "‘PUĂN ‘NU NGÔI",
+            guide_title: "TRONG NGÔI ‘BAI UNO", btn_close_guide: "KƠ-DƠ NGAI",
             guide_content: `
-                <h3 style="color: #69f0ae; margin-bottom: 5px;">Thoi Xoang:</h3>
+                <h3 style="color: #69f0ae; margin-bottom: 5px;">TRONG NGÔI:</h3>
                 <ul style="padding-left: 20px; margin-top: 0;">
-                    <li>Chia an môi bơng 7 lá bài. Bài dai đoi bốc. Lật lá đầu tiên gôk xoang. Nhớ xáo bài kỹ.</li>
-                    <li>Đánh bài truh Màu hâm truh Số/Ký hiệu tơ lá bài lơ măt. Pơ-kă dùng bài Vạn năng (Wild) hơ-tŏk yô an.</li>
-                    <li>Tơ bơng hưm bài đánh, bơng an bốc môi lá. Tơ bốc truh bài đánh an, đánh luân.</li>
-                    <li>Luật "UNO!": Tơ kòn bar lá hâm đánh vât môi lá (kòn môi lá), an bơng hô "UNO!". Tơ brôk hô: Phạt bốc bar lá.</li>
-                    <li>Xong ván: Ván xoang xong tơ môi bơng đánh vât bài tơ tay. Ngai vât bài đầu tiên la ngai kơ-đơ.</li>
+                    <li>Trong ngôi hơxong rĭm ‘nu 7 tŏ hla ‘bai. Dôm ‘bai oei rơbeh ‘măn hơtăl mĭnh hơnih pơm ‘bai iŏk thêm. Tơblang hla ‘bai mă gơgơ̆l wă pơtơm ngôi. Kơ‘na xŭk hla ‘bai mă hĕch hơdroi kơ hơxong.</li>
+                    <li>Tôh ‘bai kiơ̆ kơ pơkă pơnĭk lơlaĭ dah kơxô̆ lơlaĭ/ tơdra păng hla ah kơpal ah kơpal ‘bai hơtăl ‘măn, duh gơh yuơ hla ‘bai Vạn năng (Wild) layơ wă.</li>
+                    <li>Tơ̆ng bĭ đei hla ‘bai lơlaĭ athei iŏk 1 pôm hla ‘bai dơ̆ng hơnih ‘măn hơtăl, tơ̆ng hla ‘bai ‘nao iŏk gơh tôh noh đei quyên tôh hloi.</li>
+                    <li>Pơkă ‘UNO!’’, ‘bơ̆t oei pă 2 tõ hla păng kơchăng tôh tơ‘nhur hla ‘bai ( wă ’măn oei pă 1 pôm hla ‘bai )’UNO!’’, athei dreo ‘UNO’’! Tơ̆ng hiơt kơ dreo tơ̆ng đe lơlĕ: Phak iŏk hơtăm 2 tõ hla.</li>
+                    <li>Pơtôch tơdrong ngôi, tơdrong ngôi ‘bai pơtôch ‘bơ̆t đei mĭnh ‘nu tôh đĭ hla ‘bai lơ̆m ti. Bơngai sa jĭ bơngai đĭ hla ‘bai mă gơgơ̆l.</li>
                 </ul>
-                <h3 style="color: #ffab40; margin-bottom: 5px;">Giới thiệu: Bộ bài “Lá chắn số”</h3>
+                <h3 style="color: #ffab40; margin-bottom: 5px;">BỘ ‘BAI "HLA DƠ̆T KƠXÔ̆"</h3>
                 <ul style="padding-left: 20px; margin-top: 0;">
-                    <li>Pơ-gơ̆ng tơ Luật An ninh mạng păng Bộ luật Hình sự pơ-tô tơ luật xoang UNO kơ-drai gôk an bơng lăng jê.</li>
-                    <li>Môi lá bài an tơ-băt môi pơ-kă lừa đảo hâm vi phạm mạng, an bơng pơ-rông pơ-đam hâm tơ-băt cách giải quyết tơ bơng đánh bài. Thoi âu an giờ xoang joi không gian học tập tương tác, an pơ-rông băt luật pháp, băt tơ-drong pơ-gơ̆ng pơ-ngôl đoi.</li>
+                    <li>Gơh pơjing kiơ̆ kơ luât sơnêp lơ̆m mạng păng bộ luât hình sự tich hợp lơ̆m luât ngôi UNO khôi so wă pơ jing tơdrong tơjĕ dih băl.</li>
+                    <li>‘Rĭm hla ‘bai tơlĕch ăn mĭnh tơdrong pơđă pháp lý pơpơm khan gah hơlĕnh pơdăr hơ dah pơm yoch lơ̆m mạng, lơ̆m đe hơdruh tơdăm athei pơma pơđăp khul păng chă trong bơ̆ ming tơdrong tơpă hơdroi wă tôh ‘bai. Hơnih mă âu gŭm hơ‘blih jơ ngôi jing hơnih pơhrăm pơma tơl, gŭm đe hơdruh tơdăm wao kơ jăp kiến thức phap luât, vừa trau dồi vốn từ vựng ngoại ngữ một cách tự nhiên.</li>
                 </ul>`,
-            you: "BƠNG", bot: "MÁY", turn: "Lượt:", pick_color: "CHỌN MÀU", restart: "XOANG LẠI",
-            msg_dealing: "Đang chia...", msg_start: "Xoang!", msg_cant_play: "Hưm đánh được!",
-            msg_draw1: "Bơng bốc 1 lá", msg_skip: "cấm lượt!", msg_reverse: "Đổi chiều!",
+            // BẮT BUỘC PHẢI DÙNG DẤU \\ ĐỂ BỘ GÕ TNKEY HIỂU VÀ CHUYỂN ĐỔI CHÍNH XÁC
+            you: "Inh", bot: "Kơma\\i", turn: "Mâng:", pick_color: "Rơih pơni\\k", restart: "Ngôi wơ̆",
+            msg_dealing: "Oei pơjao hla bai...", msg_start: "Pơhu\\m", msg_cant_play: "Bi\\ gơh ngôi",
+            msg_draw1: "Bơng bốc 1 lá", msg_skip: "Kâm mơ̆ng!", msg_reverse: "Hơ[lĭh!",
             msg_draw2: "An bốc bar lá!", msg_draw4: "An bốc pơ-nuôn lá!",
-            msg_pick: "Chọn màu", msg_ai_draw: "Bốc bài...", msg_forgot_uno: "Quên UNO! Phạt 2 lá!",
-            color_red: "ĐỎ", color_blue: "XANH", color_green: "LÁ", color_yellow: "VÀNG",
+            msg_pick: "Rơih pơnĭk", msg_ai_draw: "Tŏk hla bai...", msg_forgot_uno: "Bơtih UNO! Pơxrŭ 2 hla!",
+            color_red: "HƠDRAH", color_blue: "GƠJƠ̆NG", color_green: "HƠNI", color_yellow: "HƠMĬNH",
             win_msg: "CHÚC MỪNG!<br>BƠNG KƠ-ĐƠ 🎉", lose_msg: "THUA TRẬN<br>{name} KƠ-ĐƠ 😭"
         }
     };
@@ -484,6 +492,12 @@
 
     function setLanguage(lang) {
         currentLang = lang;
+        document.body.classList.remove('lang-vi', 'lang-en', 'lang-ba');
+        if (lang === 'bana') {
+            document.body.classList.add('lang-ba');
+        } else {
+            document.body.classList.add('lang-' + lang);
+        }
         document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`btn-lang-${lang}`).classList.add('active');
         document.getElementById('btn-easy').innerText = t('btn_easy');
@@ -501,6 +515,7 @@
         document.getElementById('lbl-turn').innerText = t('turn');
         document.getElementById('lbl-pick-color').innerText = t('pick_color');
         document.getElementById('btn-restart').innerText = t('restart');
+        
         
         if(players.length > 0) {
             players[0].name = t('you');
